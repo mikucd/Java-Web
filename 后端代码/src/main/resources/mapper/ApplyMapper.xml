@@ -1,0 +1,61 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.cdtu.office.mapper.ApplyMapper">
+
+    <!--分页查询-->
+    <select id="selectPage" resultType="cn.cdtu.office.entity.Apply">
+        SELECT
+        a.*,
+        b.user_name,
+        c.article_name
+        FROM
+        apply a
+        LEFT JOIN USER b ON a.user_id = b.user_id
+        LEFT JOIN article c ON a.article_id = c.article_id
+        <include refid="listWhere" />
+        LIMIT #{start},#{pageSize}
+    </select>
+
+    <!--总记录数查询-->
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        apply a
+        LEFT JOIN USER b ON a.user_id = b.user_id
+        LEFT JOIN article c ON a.article_id = c.article_id
+        <include refid="listWhere" />
+    </select>
+
+    <sql id="listWhere">
+        <where>
+            <if test="null != applyStatus">
+                a.apply_status = #{applyStatus}
+            </if>
+            <if test="null != userName and userName != ''">
+                AND b.user_name LIKE concat( '%', #{userName}, '%' )
+            </if>
+            <if test="null != articleName and articleName != ''">
+                AND c.article_name LIKE concat( '%', #{articleName}, '%' )
+            </if>
+        </where>
+        ORDER BY
+        a.apply_time DESC
+    </sql>
+
+    <!--根据主键修改-->
+    <update id="updateById" parameterType="cn.cdtu.office.entity.Apply">
+        UPDATE apply
+        SET
+        apply_status = #{applyStatus},
+        audit_by = #{auditBy},
+        audit_time = #{auditTime},
+        <if test="null != auditRemark and auditRemark != ''">
+            audit_remark = #{auditRemark},
+        </if>
+        update_by = #{updateBy},
+        update_time = #{updateTime}
+        WHERE apply_id = #{applyId}
+    </update>
+</mapper>

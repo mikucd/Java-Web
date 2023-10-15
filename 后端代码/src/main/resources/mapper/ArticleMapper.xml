@@ -1,0 +1,70 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.cdtu.office.mapper.ArticleMapper">
+    <!--列表查询-->
+    <select id="selectList" resultType="cn.cdtu.office.entity.Article">
+        select * from article
+        <include refid="listWhere" />
+    </select>
+
+    <!--分页查询-->
+    <select id="selectPage" resultType="cn.cdtu.office.entity.Article">
+        select * from article
+        <include refid="listWhere" />
+        limit #{start}, #{pageSize}
+    </select>
+
+    <!--总记录数查询-->
+    <select id="selectCount" resultType="java.lang.Integer">
+        select count(*) from article
+        <include refid="listWhere" />
+    </select>
+
+    <!--公共查询条件-->
+    <sql id="listWhere">
+        <where>
+            <if test="articleName != null and articleName != ''">
+                article_name like concat('%',#{articleName}, '%')
+            </if>
+            <if test="articleType != null">
+                and article_type = #{articleType}
+            </if>
+        </where>
+        order by create_time desc
+    </sql>
+
+    <!--新增物品-->
+    <insert id="insertArticle" parameterType="cn.cdtu.office.entity.Article">
+    INSERT INTO article ( article_name, article_type, stock_num, stock_unit, article_describe, create_time, create_by )
+    VALUES (
+         #{articleName},
+         #{articleType},
+         #{stockNum},
+         #{stockUnit},
+         #{articleDescribe},
+         #{createTime},
+         #{createBy}
+         )
+</insert>
+
+    <!--根据主键修改-->
+    <update id="updateById" parameterType="cn.cdtu.office.entity.Article">
+    UPDATE article
+    SET article_name = #{articleName},
+        article_type = #{articleType},
+        stock_num = #{stockNum},
+        stock_unit = #{stockUnit},
+        article_describe = #{articleDescribe},
+        update_time = #{updateTime},
+        update_by = #{updateBy}
+    where article_id = #{articleId}
+</update>
+
+    <!--根据主键删除-->
+    <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from article where article_id = #{articleId}
+</delete>
+
+
+</mapper>
